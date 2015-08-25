@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int ith= 0;
     private final int PRICE_COFFEE= 2000;
+    private int mQuantity= 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +28,9 @@ public class MainActivity extends AppCompatActivity {
     public void submitOrder(View view){
 
         //Log.d(this.getLocalClassName(), "Order button pressed! "+ ith++);
-        display(2);
-        displayPrice(PRICE_COFFEE* 2);
+        display(mQuantity);
+        displayPrice(PRICE_COFFEE * mQuantity);
+
     }
 
     /**
@@ -50,8 +52,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void decreaseQuantity(View view){
+        if(mQuantity> 0) {
+            display(mQuantity--);
+        }
 
+    }
 
+    public void increaseQuantity(View view){
+        display(mQuantity++);
+    }
 
 
 

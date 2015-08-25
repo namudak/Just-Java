@@ -16,12 +16,37 @@
         android:layout_marginBottom="16dp"
         android:textSize="30dp"/>
 
-    <TextView android:text="0"
-        android:textColor="#000000"
-        android:textSize="35dp"
-        android:id="@+id/quantity_text_view"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-"
+            android:textSize="48dp"
+            android:onClick="decreaseQuantity"
+            android:id="@+id/button_decrease_number" />
+        <TextView android:text="0"
+            android:textColor="#000000"
+            android:textSize="35dp"
+            android:id="@+id/quantity_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize= "48dp"
+            android:text="+"
+            android:id="@+id/button_increase_number"
+            android:onClick="increaseQuantity"
+            android:layout_gravity="center_horizontal" />
+
+
+    </LinearLayout>
 
     <TextView android:text="Price"
         android:layout_width="wrap_content"
