@@ -9,7 +9,33 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <TextView android:text="Quantity"
+    <TextView android:text="Coffee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="true"
+        android:textSize="30dp"/>
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/coffee_spinner" />
+
+    <TextView android:text="Toppings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="true"
+        android:textSize="30dp"/>
+
+    <CheckBox
+        android:id="@+id/topping_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:paddingLeft="24dp"
+        android:text="Whipped cream"
+        android:textAppearance="?android:textAppearanceMedium" />
+
+    <TextView android:text="@string/quantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAllCaps="true"
@@ -47,7 +73,8 @@
 
     </LinearLayout>
 
-    <TextView android:text="Price"
+    <TextView android:id="@+id/order_summary_title"
+        android:text="@string/price"
         android:layout_marginTop="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -56,7 +83,7 @@
 
     <TextView android:text="0"
         android:textColor="#000000"
-        android:textSize="35dp"
+        android:textSize="30dp"
         android:id="@+id/price_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -67,7 +94,7 @@
         android:layout_height="wrap_content"
         android:onClick="submitOrder"
         android:textSize="35dp"
-        android:text="Order"
+        android:text="@string/order"
         android:id="@+id/order_text_view"/>
 
 </LinearLayout>

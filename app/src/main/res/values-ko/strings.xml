@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Just Java</string>
+    <string name="order">주문</string>
+    <string name="quantity">수량</string>
+    <string name="thankyou">감사합니다.</string>
+    <string name="price">가격</string>
+</resources>
