@@ -19,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        displayPrice(mQuantity);
     }
 
     /**
@@ -29,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Log.d(this.getLocalClassName(), "Order button pressed! "+ ith++);
         display(mQuantity);
-        displayPrice(PRICE_COFFEE * mQuantity);
+        displayPrice(PRICE_COFFEE* mQuantity);
 
     }
 
@@ -52,15 +54,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Quantity decrease
+     * @param view
+     */
     public void decreaseQuantity(View view){
-        if(mQuantity> 0) {
-            display(mQuantity--);
-        }
+        if(--mQuantity< 0)
+            mQuantity= 0;
+
+        display(mQuantity);
+        displayPrice(PRICE_COFFEE* mQuantity);
 
     }
 
+    /**
+     * Quantity increase
+     * @param view
+     */
     public void increaseQuantity(View view){
-        display(mQuantity++);
+
+        display(++mQuantity);
+        displayPrice(PRICE_COFFEE* mQuantity);
     }
 
 
