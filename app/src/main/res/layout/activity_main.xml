@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:hint="Name"
             android:textSize="30dp"
+            android:singleLine="true"
             android:id="@+id/name_text_edit"/>
 
 
@@ -118,7 +119,7 @@
             android:onClick="submitOrder"
             android:textSize="35dp"
             android:text="@string/order"
-            android:id="@+id/order_text_view"/>
+            android:id="@+id/order_button"/>
 
     </LinearLayout>
 </ScrollView>

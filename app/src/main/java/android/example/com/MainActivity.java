@@ -7,10 +7,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.NumberFormat;
 
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private CheckBox mWhipingCreamCheckBox;
     private CheckBox mChocolateCheckBox;
     private EditText mNameEditText;
+    private Button mOrderButton;
+    private boolean mOnOrder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mChocolateCheckBox= (CheckBox)findViewById(R.id.topping2_checkbox);
 
         mNameEditText= (EditText)findViewById(R.id.name_text_edit);
+        mOrderButton= (Button)findViewById(R.id.order_button);
+
+        // Now new order
+        mOnOrder= true;
     }
 
 
@@ -59,6 +67,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     public void submitOrder(View view){
 
+        if(!mOnOrder) {
+            mQuantity= 0;
+            mWhippingcream= 0;
+            mChocolate= 0;
+            mSummaryTextView.setText("Price");
+            mPriceTextView.setText(NumberFormat.getCurrencyInstance().format(0));
+            display(0);
+            displayPrice(0);
+            mOnOrder= true;
+            return;
+        }
         //Log.d(this.getLocalClassName(), "Order button pressed! "+ ith++);
         //display(mQuantity);
         //displayPrice(PRICE_COFFEE* mQuantity);
@@ -82,6 +101,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 "Quantity: "+ mQuantity+ "\n"+
                 "Total: "+ price+ "\n"+ getString(R.string.thankyou);
         displayMessage(message);
+
+        mOnOrder= false;
+
+
     }
     /**
      * Quantity display
@@ -133,7 +156,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     public void increaseQuantity(View view){
 
-        display(++mQuantity);
+        if(++mQuantity> 100){
+            Toast.makeText(getApplicationContext(), "Cant order over 100cups", Toast.LENGTH_SHORT).show();
+            mQuantity= 100;
+        }
+
+        display(mQuantity);
 
         checkTopping(view);
         checkTopping2(view);
