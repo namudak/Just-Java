@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -18,11 +19,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private int ith= 0;
     private final int PRICE_COFFEE= 2000;
     private int mWhippingcream= 0;
+    private int mChocolate= 0;
     private int mQuantity= 0;
     private TextView mPriceTextView;
     private TextView mQuantityTextView;
     private TextView mSummaryTextView;
-    private CheckBox mToppingCheckBox;
+    private CheckBox mWhipingCreamCheckBox;
+    private CheckBox mChocolateCheckBox;
+    private EditText mNameEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +46,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
         
-        mToppingCheckBox= (CheckBox)findViewById(R.id.topping_checkbox);
+        mWhipingCreamCheckBox= (CheckBox)findViewById(R.id.topping_checkbox);
+        mChocolateCheckBox= (CheckBox)findViewById(R.id.topping2_checkbox);
+
+        mNameEditText= (EditText)findViewById(R.id.name_text_edit);
     }
 
 
@@ -56,19 +63,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //display(mQuantity);
         //displayPrice(PRICE_COFFEE* mQuantity);
         int totalSum= PRICE_COFFEE* mQuantity;
-        if(mToppingCheckBox.isChecked()) {
-            totalSum+= mWhippingcream* mQuantity;
+        if(mWhipingCreamCheckBox.isChecked()) {
+            totalSum+= (mWhippingcream+ mChocolate)* mQuantity;
         }
 
         String strWhipped= "Add whipping cream ? ";
-        strWhipped+= mToppingCheckBox.isChecked();
+        strWhipped+= mWhipingCreamCheckBox.isChecked();
+
+        String strChocolate= "Add whipping cream ? ";
+        strChocolate+= mChocolateCheckBox.isChecked();
 
         String ordersummary= "Order Summary";
         mSummaryTextView.setText(ordersummary);
 
-        String whoim= "Name: Sungbok Lee";
+        String whoim= "Name: "+ mNameEditText.getText();
         String price= NumberFormat.getCurrencyInstance().format(totalSum);
-        String message= whoim+ "\n"+ strWhipped+ "\n"+ "Quantity: "+ mQuantity+ "\n"+
+        String message= whoim+ "\n"+ strWhipped+ "\n"+ strChocolate+ "\n"+
+                "Quantity: "+ mQuantity+ "\n"+
                 "Total: "+ price+ "\n"+ getString(R.string.thankyou);
         displayMessage(message);
     }
@@ -85,10 +96,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
      * @param number
      */
     private void displayPrice(int number){
-        if(mToppingCheckBox.isChecked()){
-            mWhippingcream= 500;
-        }
-        mPriceTextView.setText(NumberFormat.getCurrencyInstance().format(number+ mWhippingcream* mQuantity));
+
+        mPriceTextView.setText(NumberFormat.getCurrencyInstance().format(number));
 
     }
 
@@ -110,7 +119,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             mQuantity= 0;
 
         display(mQuantity);
-        displayPrice(PRICE_COFFEE * mQuantity);
+
+        checkTopping(view);
+        checkTopping2(view);
+
+        displayPrice((PRICE_COFFEE + mWhippingcream + mChocolate) * mQuantity);
 
     }
 
@@ -121,9 +134,31 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void increaseQuantity(View view){
 
         display(++mQuantity);
-        displayPrice(PRICE_COFFEE * mQuantity);
+
+        checkTopping(view);
+        checkTopping2(view);
+
+        displayPrice((PRICE_COFFEE + mWhippingcream + mChocolate) * mQuantity);
     }
 
+    public void checkTopping(View view) {
+        if(mWhipingCreamCheckBox.isChecked()){
+            mWhippingcream= 500;
+        } else {
+            mWhippingcream= 0;
+        }
+        displayPrice((PRICE_COFFEE + mWhippingcream + mChocolate) * mQuantity);
+
+    }
+    public void checkTopping2(View view) {
+        if (mChocolateCheckBox.isChecked()) {
+            mChocolate= 300;
+        } else {
+            mChocolate= 0;
+        }
+        displayPrice((PRICE_COFFEE + mWhippingcream + mChocolate) * mQuantity);
+
+    }
 
     public void onItemSelected(AdapterView<?> parent, View view,
                                int pos, long id) {
