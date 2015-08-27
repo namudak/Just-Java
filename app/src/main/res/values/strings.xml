@@ -10,14 +10,14 @@
     <string name="price">Price</string>
 
     <string-array name="coffee_menu">
-        <item>Blonde Roast</item>
-        <item>Caffe Misto</item>
-        <item>Clover Brewd Coffee</item>
-        <item>Coffee Traveller</item>
-        <item>Featured Dark Roast</item>
-        <item>Iced Coffee</item>
-        <item>Iced Coffee with Milk</item>
-        <item>Featured Dark Roast</item>
+        <item>Blonde Roast 2000원</item>
+        <item>Caffe Misto 2500원</item>
+        <item>Clover Brewd Coffee 3000원</item>
+        <item>Coffee Traveller 5000원</item>
+        <item>Featured Dark Roast 4000원</item>
+        <item>Iced Coffee 5000원</item>
+        <item>Iced Coffee with Milk 6000원</item>
+        <item>Featured Dark Roast 7000원</item>
     </string-array>
 </resources>
 

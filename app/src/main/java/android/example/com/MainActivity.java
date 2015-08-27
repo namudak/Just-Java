@@ -1,6 +1,12 @@
 package android.example.com;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,10 +43,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mPriceTextView = (TextView)findViewById(R.id.price_text_view);
-        mQuantityTextView = (TextView)findViewById(R.id.quantity_text_view);
-        mSummaryTextView = (TextView)findViewById(R.id.order_summary_title);
-        
         Spinner spinner = (Spinner) findViewById(R.id.coffee_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -49,7 +51,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
-        
+
+        mPriceTextView = (TextView)findViewById(R.id.price_text_view);
+        mQuantityTextView = (TextView)findViewById(R.id.quantity_text_view);
+        mSummaryTextView = (TextView)findViewById(R.id.order_summary_title);
+
         mWhipingCreamCheckBox= (CheckBox)findViewById(R.id.topping_checkbox);
         mChocolateCheckBox= (CheckBox)findViewById(R.id.topping2_checkbox);
 
@@ -58,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         // Now new order
         mOnOrder= true;
+
+        displayPrice(0);
     }
 
 
@@ -67,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     public void submitOrder(View view){
 
+        // Next new order ready
         if(!mOnOrder) {
             mQuantity= 0;
             mWhippingcream= 0;
@@ -76,11 +85,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             display(0);
             displayPrice(0);
             mOnOrder= true;
+            mOrderButton.setText("주문");
             return;
         }
+
         //Log.d(this.getLocalClassName(), "Order button pressed! "+ ith++);
         //display(mQuantity);
         //displayPrice(PRICE_COFFEE* mQuantity);
+
+        // Do order summary
         int totalSum= PRICE_COFFEE* mQuantity;
         if(mWhipingCreamCheckBox.isChecked()) {
             totalSum+= (mWhippingcream+ mChocolate)* mQuantity;
@@ -89,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         String strWhipped= "Add whipping cream ? ";
         strWhipped+= mWhipingCreamCheckBox.isChecked();
 
-        String strChocolate= "Add whipping cream ? ";
+        String strChocolate= "Add Chocolate ? ";
         strChocolate+= mChocolateCheckBox.isChecked();
 
         String ordersummary= "Order Summary";
@@ -100,9 +113,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         String message= whoim+ "\n"+ strWhipped+ "\n"+ strChocolate+ "\n"+
                 "Quantity: "+ mQuantity+ "\n"+
                 "Total: "+ price+ "\n"+ getString(R.string.thankyou);
+
         displayMessage(message);
 
+        // Next order button
         mOnOrder= false;
+        mOrderButton.setText("다음 주문");
 
 
     }
@@ -134,13 +150,36 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     /**
+     * Display user warning using notification
+     */
+    private void diplayNotification() {
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder mCompatBuilder = new NotificationCompat.Builder(this);
+        mCompatBuilder.setSmallIcon(R.drawable.justjava);
+        mCompatBuilder.setTicker("NotificationCompat.Builder");
+        mCompatBuilder.setWhen(System.currentTimeMillis());
+        mCompatBuilder.setNumber(10);
+        mCompatBuilder.setContentTitle("NotificationCompat.Builder Title");
+        mCompatBuilder.setContentText("NotificationCompat.Builder Massage");
+        mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+        mCompatBuilder.setContentIntent(pendingIntent);
+        mCompatBuilder.setAutoCancel(true);
+
+        nm.notify(222, mCompatBuilder.build());
+    }
+    /**
      * Quantity decrease
      * @param view
      */
     public void decreaseQuantity(View view){
-        if(--mQuantity< 0)
-            mQuantity= 0;
 
+        if(--mQuantity< 0) {
+            mQuantity = 0;
+            diplayNotification();
+            //Toast.makeText(getApplicationContext(), "Cant order under 0 cup", Toast.LENGTH_SHORT).show();
+        }
         display(mQuantity);
 
         checkTopping(view);
@@ -169,6 +208,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         displayPrice((PRICE_COFFEE + mWhippingcream + mChocolate) * mQuantity);
     }
 
+    /**
+     * Check whipped cream
+     * @param view
+     */
     public void checkTopping(View view) {
         if(mWhipingCreamCheckBox.isChecked()){
             mWhippingcream= 500;
@@ -178,6 +221,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         displayPrice((PRICE_COFFEE + mWhippingcream + mChocolate) * mQuantity);
 
     }
+
+    /**
+     * Check chocolate
+     * @param view
+     */
     public void checkTopping2(View view) {
         if (mChocolateCheckBox.isChecked()) {
             mChocolate= 300;
@@ -188,6 +236,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     }
 
+    /**
+     * Select coffee menu
+     * @param parent
+     * @param view
+     * @param pos
+     * @param id
+     */
     public void onItemSelected(AdapterView<?> parent, View view,
                                int pos, long id) {
         // An item was selected. You can retrieve the selected item using
@@ -196,10 +251,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         spinner.setOnItemSelectedListener(this);
     }
 
+    /**
+     *
+     * @param parent
+     */
     public void onNothingSelected(AdapterView<?> parent) {
         // Another interface callback
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
