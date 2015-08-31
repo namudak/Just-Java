@@ -32,7 +32,8 @@
         <Spinner
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/coffee_spinner" />
+            android:id="@+id/coffee_spinner"
+            android:entries="@array/coffee_menu"/>
 
         <TextView android:text="Toppings"
             android:layout_width="wrap_content"
@@ -93,8 +94,6 @@
                 android:id="@+id/button_increase_number"
                 android:onClick="increaseQuantity"
                 android:layout_gravity="center_horizontal" />
-
-
         </LinearLayout>
 
         <TextView android:id="@+id/order_summary_title"
@@ -112,14 +111,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:gravity="center"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="submitOrder"
-            android:textSize="35dp"
-            android:text="@string/order"
-            android:id="@+id/order_button"/>
-
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="submitOrder"
+                android:textSize="30dp"
+                android:text="@string/order"
+                android:id="@+id/order_button"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="viewOrder"
+                android:textSize="30dp"
+                android:text="@string/vieworder"
+                android:id="@+id/view_order_button"/>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

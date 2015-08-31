@@ -20,22 +20,34 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private int ith= 0;
-    private final int PRICE_COFFEE= 2000;
-    private int mWhippingcream= 0;
-    private int mChocolate= 0;
-    private int mQuantity= 0;
+    private List orderbook= new ArrayList<Order>();
+    private Order order;
+
+    private Spinner mSpinner;
+
+    private String mMenuCoffee;
+    private int mPriceCoffee;
+    private int mPriceWhippingcream;
+    private int mPriceChocolate;
+    private int mQuantity;
+
     private TextView mPriceTextView;
     private TextView mQuantityTextView;
     private TextView mSummaryTextView;
     private CheckBox mWhipingCreamCheckBox;
     private CheckBox mChocolateCheckBox;
     private EditText mNameEditText;
+
     private Button mOrderButton;
+    private Button mViewOrderButton;
+
     private boolean mOnOrder;
 
     @Override
@@ -43,15 +55,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Spinner spinner = (Spinner) findViewById(R.id.coffee_spinner);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.coffee_menu, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
+        // Add Spinner Listener
+        addListenerOnSpinnerItemSelection();
 
+        // Add Member variables
         mPriceTextView = (TextView)findViewById(R.id.price_text_view);
         mQuantityTextView = (TextView)findViewById(R.id.quantity_text_view);
         mSummaryTextView = (TextView)findViewById(R.id.order_summary_title);
@@ -61,11 +68,24 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         mNameEditText= (EditText)findViewById(R.id.name_text_edit);
         mOrderButton= (Button)findViewById(R.id.order_button);
+        mViewOrderButton= (Button)findViewById(R.id.view_order_button);
 
         // Now new order
         mOnOrder= true;
 
+        // Set intial value
+        mQuantity= 0;
+        mPriceWhippingcream= 0;
+        mPriceChocolate= 0;
+
+        // Set price to local currency
         displayPrice(0);
+    }
+
+    public void addListenerOnSpinnerItemSelection() {
+
+        mSpinner = (Spinner) findViewById(R.id.coffee_spinner);
+        mSpinner.setOnItemSelectedListener(MainActivity.this);
     }
 
 
@@ -78,8 +98,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // Next new order ready
         if(!mOnOrder) {
             mQuantity= 0;
-            mWhippingcream= 0;
-            mChocolate= 0;
+            mPriceWhippingcream = 0;
+            mPriceChocolate = 0;
+            mWhipingCreamCheckBox.setChecked(false);
+            mChocolateCheckBox.setChecked(false);
             mSummaryTextView.setText("Price");
             mPriceTextView.setText(NumberFormat.getCurrencyInstance().format(0));
             display(0);
@@ -89,39 +111,38 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             return;
         }
 
-        //Log.d(this.getLocalClassName(), "Order button pressed! "+ ith++);
-        //display(mQuantity);
-        //displayPrice(PRICE_COFFEE* mQuantity);
+        // Do return if quantity== 0
+        if(mQuantity== 0) return;
 
         // Do order summary
-        int totalSum= PRICE_COFFEE* mQuantity;
-        if(mWhipingCreamCheckBox.isChecked()) {
-            totalSum+= (mWhippingcream+ mChocolate)* mQuantity;
-        }
-
-        String strWhipped= "Add whipping cream ? ";
-        strWhipped+= mWhipingCreamCheckBox.isChecked();
-
-        String strChocolate= "Add Chocolate ? ";
-        strChocolate+= mChocolateCheckBox.isChecked();
-
-        String ordersummary= "Order Summary";
-        mSummaryTextView.setText(ordersummary);
-
-        String whoim= "Name: "+ mNameEditText.getText();
-        String price= NumberFormat.getCurrencyInstance().format(totalSum);
-        String message= whoim+ "\n"+ strWhipped+ "\n"+ strChocolate+ "\n"+
-                "Quantity: "+ mQuantity+ "\n"+
-                "Total: "+ price+ "\n"+ getString(R.string.thankyou);
-
-        displayMessage(message);
+        displayMessage(order.getOderSummary(mSummaryTextView, mNameEditText));
 
         // Next order button
         mOnOrder= false;
         mOrderButton.setText("다음 주문");
+        
+        // Add order to OrderBook
+        order= new Order(mMenuCoffee,mPriceCoffee,
+                mPriceWhippingcream,mPriceChocolate,mQuantity);
 
+        orderbook.add(order);
 
     }
+
+    /**
+     * List orders at another activity
+     * @param view
+     */
+    public void viewOrder(View view) {
+        // Intent에 OrderBook객체 저장
+        Intent intent = new Intent(MainActivity.this, ListOrderActivity.class);
+        intent.putExtra("orderbook", (ArrayList<Order>) orderbook);
+
+        // ListOrderActivity로 Activity 전환
+        startActivity(intent);
+
+    }
+
     /**
      * Quantity display
      * @param number
@@ -137,7 +158,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private void displayPrice(int number){
 
         mPriceTextView.setText(NumberFormat.getCurrencyInstance().format(number));
-
     }
 
     /**
@@ -152,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     /**
      * Display user warning using notification
      */
-    private void diplayNotification() {
+    private void diplayNotification(int num) {
         NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -161,8 +181,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mCompatBuilder.setTicker("NotificationCompat.Builder");
         mCompatBuilder.setWhen(System.currentTimeMillis());
         mCompatBuilder.setNumber(10);
-        mCompatBuilder.setContentTitle("NotificationCompat.Builder Title");
-        mCompatBuilder.setContentText("NotificationCompat.Builder Massage");
+        mCompatBuilder.setContentTitle("Order error");
+        mCompatBuilder.setContentText("Cant order under 0 or over 100 cup(s).");
         mCompatBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
         mCompatBuilder.setContentIntent(pendingIntent);
         mCompatBuilder.setAutoCancel(true);
@@ -177,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         if(--mQuantity< 0) {
             mQuantity = 0;
-            diplayNotification();
+            diplayNotification(mQuantity);
             //Toast.makeText(getApplicationContext(), "Cant order under 0 cup", Toast.LENGTH_SHORT).show();
         }
         display(mQuantity);
@@ -185,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         checkTopping(view);
         checkTopping2(view);
 
-        displayPrice((PRICE_COFFEE + mWhippingcream + mChocolate) * mQuantity);
+        displayPrice((mPriceCoffee + mPriceWhippingcream + mPriceChocolate) * mQuantity);
 
     }
 
@@ -196,8 +216,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void increaseQuantity(View view){
 
         if(++mQuantity> 100){
-            Toast.makeText(getApplicationContext(), "Cant order over 100cups", Toast.LENGTH_SHORT).show();
             mQuantity= 100;
+            diplayNotification(mQuantity);
+            //Toast.makeText(getApplicationContext(), "Cant order over 100cups", Toast.LENGTH_SHORT).show();
         }
 
         display(mQuantity);
@@ -205,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         checkTopping(view);
         checkTopping2(view);
 
-        displayPrice((PRICE_COFFEE + mWhippingcream + mChocolate) * mQuantity);
+        displayPrice((mPriceCoffee + mPriceWhippingcream + mPriceChocolate) * mQuantity);
     }
 
     /**
@@ -214,11 +235,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     public void checkTopping(View view) {
         if(mWhipingCreamCheckBox.isChecked()){
-            mWhippingcream= 500;
+            mPriceWhippingcream = 500;
         } else {
-            mWhippingcream= 0;
+            mPriceWhippingcream = 0;
         }
-        displayPrice((PRICE_COFFEE + mWhippingcream + mChocolate) * mQuantity);
+        displayPrice((mPriceCoffee + mPriceWhippingcream + mPriceChocolate) * mQuantity);
 
     }
 
@@ -228,35 +249,34 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     public void checkTopping2(View view) {
         if (mChocolateCheckBox.isChecked()) {
-            mChocolate= 300;
+            mPriceChocolate = 300;
         } else {
-            mChocolate= 0;
+            mPriceChocolate = 0;
         }
-        displayPrice((PRICE_COFFEE + mWhippingcream + mChocolate) * mQuantity);
+        displayPrice((mPriceCoffee + mPriceWhippingcream + mPriceChocolate) * mQuantity);
 
     }
 
-    /**
-     * Select coffee menu
-     * @param parent
-     * @param view
-     * @param pos
-     * @param id
-     */
-    public void onItemSelected(AdapterView<?> parent, View view,
-                               int pos, long id) {
-        // An item was selected. You can retrieve the selected item using
-        // parent.getItemAtPosition(pos)
-        Spinner spinner = (Spinner) findViewById(R.id.coffee_spinner);
-        spinner.setOnItemSelectedListener(this);
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String coffeemenu= parent.getItemAtPosition(position).toString();
+        String[] arraymenu= coffeemenu.split(" ");
+
+        mMenuCoffee= arraymenu[0];
+
+        String str= arraymenu[1].replace(",", "");
+        mPriceCoffee= Integer.parseInt(str.replace("원", ""));
     }
 
-    /**
-     *
-     * @param parent
-     */
+    @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        // Another interface callback
+        String coffeemenu= parent.getItemAtPosition(0).toString();
+        String[] arraymenu= coffeemenu.split(" ");
+
+        mMenuCoffee= arraymenu[0];
+
+        String str= arraymenu[1].replace(",", "");
+        mPriceCoffee= Integer.parseInt(str.replace("원", ""));
     }
 
     @Override
@@ -280,4 +300,5 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         return super.onOptionsItemSelected(item);
     }
+
 }

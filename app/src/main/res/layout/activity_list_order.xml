@@ -1,0 +1,39 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:padding="5dp"
+tools:context=".ListOrderActivity">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="60px"
+        android:layout_height="60px"
+        android:layout_marginLeft="5px"
+        android:layout_marginRight="20px"
+        android:layout_marginTop="5px"
+        android:src="@drawable/justjava">
+    </ImageView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/coffeemenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="25px"
+            android:paddingBottom="5px"
+            android:text="Menu">
+        </TextView>
+        <TextView
+            android:id="@+id/order_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20px"
+            android:text="Order">
+        </TextView>
+    </LinearLayout>
+
+</LinearLayout>
